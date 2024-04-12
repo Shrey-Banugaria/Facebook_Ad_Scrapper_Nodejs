@@ -5,9 +5,11 @@ const { format } = require('date-fns');
 const express = require('express');
 const PORT = process.env.PORT || 3000;
 
-const accessToken = '';
+const accessToken = 'EAALPPwyxYzYBO6zZBPy1689G9sUywLHUvj5jfiDzgZBAYiYiZBicFa2kML87yzWGp1UkH0q9dLATUmVjE6G2lPuK1xuzB0sIRcO4VPet1kgmSYZCxcbZA82IcoxBZCIlxAZB1UDzfV5IDwBUhEuRelOXXLBsfQxSbCxdfZA3zNw6JS6BKu1vgA4fOHbbRy4fHLPpL2zGkPtQzUIAP7f0bn0ZAqIOgSJOeagZDZD';
 const version = 'v19.0';
+// const baseUrl = `https://graph.facebook.com/${version}/async`;
 const baseUrl = `https://graph.facebook.com/${version}/ads_archive`;
+// const baseUrl = `https://graph.facebook.com/v19.0`;
 const projectName = format(new Date(), 'yyyyMMddHHmmss');
 
 const fetchData = async (url, params, pageIds = null, pageNumber = 1) => {
@@ -15,7 +17,7 @@ const fetchData = async (url, params, pageIds = null, pageNumber = 1) => {
   try {
     const response = await axios.get(url, { params });
     const data = response.data;
-
+    console.log('Data', data);
     if (!data.data || data.data.length === 0) {
       return;
     }
@@ -47,18 +49,19 @@ const getFields = (adType) => {
     }
 };
 
-const addParameters = (fields = null, countries = 'NL', startDate = '2023-01-01', endDate = format(new Date(), 'yyyy-MM-dd'), pageIds = null, searchTerms = null, adType = 'ALL', ...kwargs) => {
+const addParameters = (fields = null, countries = 'ALL', startDate = '', endDate = '', pageIds = null, searchTerms = null, adType = 'ALL', ...kwargs) => {
   const params = {
     fields: fields || getFields(adType),
     ad_reached_countries: countries,
     ad_type: adType,
     search_page_ids: [],
-    search_terms: {},
+    search_terms: { id: 1408800003074460 } ,
     ad_delivery_date_min: startDate,
     ad_delivery_date_max: endDate,
     access_token: accessToken,
-    limit: '5',
-
+    
+    limit: '10',
+    queryString: '1408800003074460',
     ...kwargs,
   };
 
@@ -88,7 +91,7 @@ const getParameters = () => {
 };
 const app = express();
 app.get('/', async (req, res) => {
-
+  getParameters
   return res.status(200).json(currentParameters);
 
 });
@@ -102,4 +105,9 @@ const clearParameters = () => {
 
 // const currentParams = getParameters();
 // clearParameters()
+
+
+
 // Example usage
+const params = addParameters(null, 'NL', '2023-01-01', null, null, 'search_terms', 'ALL');
+startDownload(params);
